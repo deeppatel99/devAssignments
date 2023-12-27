@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html>
 
 <head>
@@ -7,16 +7,46 @@
     let todoState = [];
     let oldTodoState = [];
 
+    function markAsDone(todoId){
+      const todoItem = document.getElementById(todoId);
+      todoItem.children[2].innerHTML = 'Done!'
+
+      todoState.splice(todoId);
+      oldTodoState.splice(todoId);
+      removeTodoFromDom(todoItem);
+    }
+
     function addTodoToDom() {
-      
+
+      const length = todoState.length;
+      let latestTodo = todoState[length - 1];
+      // console.log(latestTodo);
+
+      const child = document.createElement('div');
+      const firstGrandParent = document.createElement('div');
+      const secondGrandParent = document.createElement('div');
+      const thirdGrandParent = document.createElement('button');
+      firstGrandParent.innerHTML = latestTodo.title;
+      secondGrandParent.innerHTML = latestTodo.description;
+      thirdGrandParent.innerHTML = 'Mark as done'
+      thirdGrandParent.setAttribute('onclick', `markAsDone(${latestTodo.id})`);
+      child.setAttribute('id', latestTodo.id);
+      child.appendChild(firstGrandParent);
+      child.appendChild(secondGrandParent);
+      child.appendChild(thirdGrandParent);
+      const elment = document.getElementById('todos');
+      elment.appendChild(child);
     }
 
     function removeTodoFromDom(todo) {
-      
+      const parent = document.getElementById('todos');
+      console.log(parent)
+      parent.removeChild(todo);
     }
 
     function updateTodoInDom(oldTodo, newTodo) {
-        
+        const getTodo = document.getElementById(`${oldTodo.id}`);
+        console.log(getTodo);
     }
 
     function updateState(newTodos) {
@@ -28,6 +58,28 @@
       const added = [];
       const deleted = [];
       const updated = [];
+
+
+      const length = newTodos.length;
+      let latestTodo = newTodos[length - 1];
+
+      let todoExists = oldTodoState.find(todo => latestTodo.title == todo.title && latestTodo.description == todo.description);
+      let todoIndex = oldTodoState.findIndex(todo => latestTodo.title == todo.title && latestTodo.description == todo.description);
+
+      // console.log(todoExists);
+      // console.log(todoExistsIndex);
+
+    
+      addTodoToDom();
+      
+
+      if(todoExists){
+        // update todo item
+        updateTodoInDom(oldTodoState[todoIndex], latestTodo)
+      }
+
+
+
       // calculate these 3 arrays
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
@@ -42,7 +94,9 @@
         description: description,
         id: globalId++,
       })
+       
       updateState(todoState);
+
     }
   </script>
 </head>
