@@ -1,4 +1,3 @@
-
 <html>
 
 <head>
@@ -7,7 +6,7 @@
     let todoState = [];
     let oldTodoState = [];
 
-    function markAsDone(todoId){
+    function markAsDone(todoId) {
       const todoItem = document.getElementById(todoId);
       todoItem.children[2].innerHTML = 'Done!'
 
@@ -16,11 +15,8 @@
       removeTodoFromDom(todoItem);
     }
 
-    function addTodoToDom() {
+    function addTodoToDom(latestTodo) {
 
-      const length = todoState.length;
-      let latestTodo = todoState[length - 1];
-      // console.log(latestTodo);
 
       const child = document.createElement('div');
       const firstGrandParent = document.createElement('div');
@@ -45,8 +41,8 @@
     }
 
     function updateTodoInDom(oldTodo, newTodo) {
-        const getTodo = document.getElementById(`${oldTodo.id}`);
-        console.log(getTodo);
+      oldTodo.children[0].innerHTML = newTodo.title;
+      oldTodo.children[1].innerHTML = newTodo.description;
     }
 
     function updateState(newTodos) {
@@ -55,28 +51,34 @@
       // 1. added
       // 2. deleted
       // 3. updated
-      const added = [];
-      const deleted = [];
-      const updated = [];
+      let added, deleted, updated = 0;
 
 
-      const length = newTodos.length;
-      let latestTodo = newTodos[length - 1];
+      newTodos.forEach(element => {
+        let parentElement = document.getElementById(todos);
 
-      let todoExists = oldTodoState.find(todo => latestTodo.title == todo.title && latestTodo.description == todo.description);
-      let todoIndex = oldTodoState.findIndex(todo => latestTodo.title == todo.title && latestTodo.description == todo.description);
+        if (parentElement == null) {
+          // ADD Todo
+          addTodoToDom(element);
 
-      // console.log(todoExists);
-      // console.log(todoExistsIndex);
+        } else {
+          parentElement.innerHTML = ""
+          // current children of the parent element
+          const currentChildren = Array.from(parentElement.children);
+          // check if child exists with this id
+          var existingChild = currentChildren.find(child => child.id === element.id);
 
-    
-      addTodoToDom();
-      
+          if (existingChild) {
+            // UPDATE Todo
+            updated++;
+            updateTodoInDom(existingChild, element);
 
-      if(todoExists){
-        // update todo item
-        updateTodoInDom(oldTodoState[todoIndex], latestTodo)
-      }
+            // removing from current children
+            currentChildren = currentChildren.filter(child => child.id !== element.id);
+          }
+        }
+      });
+
 
 
 
@@ -94,7 +96,7 @@
         description: description,
         id: globalId++,
       })
-       
+
       updateState(todoState);
 
     }
